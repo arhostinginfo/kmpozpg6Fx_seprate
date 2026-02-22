@@ -46,7 +46,7 @@
                                         <td>{{ $abhiyan->address }}</td>
                                         <td>{{ $abhiyan->certificate_type }}</td>
                                         <td>
-                                            <form action="{{ route('gpadmin.contact.updatestatus') }}" method="POST"
+                                            <form action="{{ route('contact.updatestatus') }}" method="POST"
                                                 class="d-inline-block delete-form">
                                                 @csrf
                                                 <label class="switch">
@@ -60,9 +60,9 @@
                                             </form>
                                         </td>
                                         <!-- <td>
-                                            <a href="{{ route('gpadmin.abhiyan.edit', base64_encode($abhiyan->id)) }}"
+                                            <a href="{{ route('abhiyan.edit', base64_encode($abhiyan->id)) }}"
                                                 class="btn btn-sm btn-outline-primary">Edit</a>
-                                            <form action="{{ route('gpadmin.abhiyan.delete') }}" method="POST"
+                                            <form action="{{ route('abhiyan.delete') }}" method="POST"
                                                 class="d-inline-block delete-form">
                                                 @csrf
                                                 <input type="hidden" name="id"
