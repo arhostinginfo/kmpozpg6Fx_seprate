@@ -131,6 +131,23 @@
                         </li>
 
 
+                         <li> <a href="{{ route('pdfupload.list') }}"> <i
+                                    class="mdi mdi-view-dashboard"></i><span>PDF Upload
+                                </span></a>
+                        </li>
+
+
+                        <li> <a href="{{ route('dakhala.list') }}"> <i
+                                    class="mdi mdi-view-dashboard"></i><span>Dakhala
+                                </span></a>
+                        </li>
+
+                        <li> <a href="{{ route('contact.list') }}"> <i
+                                    class="mdi mdi-view-dashboard"></i><span>Contact Us
+                                </span></a>
+                        </li>
+
+
 
 
                         <li> <a href="{{ route('logout') }}"> <i class="mdi mdi-account-group"></i><span>Logout

@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Superadm\LoginController;
 use App\Http\Controllers\Superadm\DashboardController;
 use App\Http\Controllers\Superadm\ChangePasswordController;
-
+use App\Http\Controllers\Superadm\DhakhalaController; 
+use App\Http\Controllers\Superadm\ContactusController; 
+use App\Http\Controllers\Superadm\PDFUploadController;  
 
 use App\Http\Controllers\Superadm\OfficerController;
 use App\Http\Controllers\Superadm\NavbarController; 
@@ -28,7 +30,7 @@ Route::get('/storage-link', function () {
 
 
 Route::post('/frontwebsitecontact', [FrontwebsitecontactController::class, 'store'])->name('frontwebsitecontact.store');
-
+Route::post('/dakhala-store', [WebSiteController::class, 'dakhalaStore'])->name('dakhala.store');
 Route::get('/', [WebSiteController::class, 'index'])->name('/');
 
 Route::get('login', [LoginController::class, 'loginsuper'])->name('login');
@@ -116,6 +118,37 @@ Route::group(['middleware' => ['SuperAdmin']], function () {
     Route::post('/welcome-note/update/{encodedId}', [WelcomeNoteController::class, 'update'])->name('welcome-note.update');
     Route::post('/welcome-note/delete', [WelcomeNoteController::class, 'delete'])->name('welcome-note.delete');
     Route::post('/welcome-note/update-status', [WelcomeNoteController::class, 'updateStatus'])->name('welcome-note.updatestatus');
+
+
+
+    
+
+    Route::get('/dakhala/list', [DhakhalaController::class, 'index'])->name('dakhala.list');
+    // Route::get('/dakhala/add', [DhakhalaController::class, 'create'])->name('dakhala.create');
+    // Route::post('/dakhala/add', [DhakhalaController::class, 'save'])->name('dakhala.save');
+    // Route::get('/dakhala/edit/{encodedId}', [DhakhalaController::class, 'edit'])->name('dakhala.edit');
+    // Route::post('/dakhala/update/{encodedId}', [DhakhalaController::class, 'update'])->name('dakhala.update');
+    // Route::post('/dakhala/delete', [DhakhalaController::class, 'delete'])->name('dakhala.delete');
+    Route::post('/dakhala/update-status', [DhakhalaController::class, 'updateStatus'])->name('dakhala.updatestatus');
+
+    Route::get('/contact/list', [ContactusController::class, 'index'])->name('contact.list');
+    // Route::get('/contact/add', [ContactusController::class, 'create'])->name('contact.create');
+    // Route::post('/contact/add', [ContactusController::class, 'save'])->name('contact.save');
+    // Route::get('/contact/edit/{encodedId}', [ContactusController::class, 'edit'])->name('contact.edit');
+    // Route::post('/contact/update/{encodedId}', [ContactusController::class, 'update'])->name('contact.update');
+    // Route::post('/contact/delete', [ContactusController::class, 'delete'])->name('contact.delete');
+    Route::post('/contact/update-status', [ContactusController::class, 'updateStatus'])->name('contact.updatestatus');
+
+
+
+    Route::get('/pdfupload/list', [PDFUploadController::class, 'list'])->name('pdfupload.list');
+    Route::get('/pdfupload/add', [PDFUploadController::class, 'add'])->name('pdfupload.add');
+    Route::post('/pdfupload/add', [PDFUploadController::class, 'save'])->name('pdfupload.save');
+    Route::get('/pdfupload/edit/{encodedId}', [PDFUploadController::class, 'edit'])->name('pdfupload.edit');
+    Route::post('/pdfupload/update/', [PDFUploadController::class, 'update'])->name('pdfupload.update');
+    Route::post('/pdfupload/delete', [PDFUploadController::class, 'delete'])->name('pdfupload.delete');
+    Route::post('/pdfupload/update-status', [PDFUploadController::class, 'updateStatus'])->name('pdfupload.updatestatus');
+
 
 
 
