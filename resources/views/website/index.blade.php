@@ -1,6 +1,7 @@
  @extends('website.layout.header')
 
  @section('content')
+ 
      <div class="page-container">
          <!-- Carousel -->
          <div class="mb-3" data-aos="fade-up">
