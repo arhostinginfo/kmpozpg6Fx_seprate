@@ -375,7 +375,7 @@
             </form>
         </section>
 
-        <!-- Mahiti -->
+        <!-- Mahitii -->
          <section id="mahiti" class="card-section" >
              <div class="section-title">वीवीध विभागांची  माहिती PDF/imeges स्वरूपातील</div>
              @if (count($pdf_all))
