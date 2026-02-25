@@ -27,12 +27,11 @@
                             <thead>
                                 <tr>
                                     <th>Sr.No.</th>
+                                    <th>नाव</th> 
                                     <th>मोबाईल नंबर</th>
-                                    <th>अर्जदाराचे नाव</th> 
-                                    <th>अर्जावर छापायचे नाव</th>
-                                    <th>पूर्ण पत्ता</th>
-                                    <th>दाखल्याचा प्रकार</th>
-                                    <th>Action Took</th>
+                                    <th>ईमेल</th>
+                                    <th>संदेश</th>
+                                    <!-- <th>Action Took</th> -->
                                     <!-- <th>Actions</th> -->
                                 </tr>
                             </thead>
@@ -40,12 +39,11 @@
                                 @foreach ($abhiyans as $key => $abhiyan)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
+                                        <td>{{ $abhiyan->name }}</td>
                                         <td>{{ $abhiyan->mobile_no }}</td>
-                                        <td>{{ $abhiyan->applicant_name }}</td>
-                                        <td>{{ $abhiyan->print_name }}</td>
-                                        <td>{{ $abhiyan->address }}</td>
-                                        <td>{{ $abhiyan->certificate_type }}</td>
-                                        <td>
+                                        <td>{{ $abhiyan->email }}</td>
+                                        <td>{{ $abhiyan->message }}</td>
+                                        <!-- <td>
                                             <form action="{{ route('contact.updatestatus') }}" method="POST"
                                                 class="d-inline-block delete-form">
                                                 @csrf
@@ -58,7 +56,7 @@
                                                 <input type="hidden" name="id"
                                                     value="{{ base64_encode($abhiyan->id) }}">
                                             </form>
-                                        </td>
+                                        </td> -->
                                         <!-- <td>
                                             <a href="{{ route('abhiyan.edit', base64_encode($abhiyan->id)) }}"
                                                 class="btn btn-sm btn-outline-primary">Edit</a>
