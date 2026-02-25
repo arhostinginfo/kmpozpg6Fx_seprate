@@ -12,6 +12,7 @@ class ContactDakhala extends Model
     protected $fillable = [
         'mobile_no',      
         'applicant_name',
+        'applicant_email',
         'print_name',
         'address',
         'certificate_type',

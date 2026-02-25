@@ -110,11 +110,12 @@ class WebSiteController extends Controller
     }
 
 
-        public function dakhalaStore(Request $request)
+    public function dakhalaStore(Request $request)
     {
         $data = $request->validate([
             'mobile_no'        => ['required', 'regex:/^[6-9]\d{9}$/'],
             'applicant_name'   => 'required|string|max:255',
+            'applicant_email'   => 'required|email|max:255',
             'print_name'       => 'required|string|max:255',
             'address'          => 'required|string',
             'certificate_type' => 'required|string',
@@ -137,5 +138,33 @@ class WebSiteController extends Controller
         }
     }
 
+
+        public function contactStore(Request $request)
+    {
+        $data = $request->validate([
+            'mobile_no'        => ['required', 'regex:/^[6-9]\d{9}$/'],
+            'applicant_name'   => 'required|string|max:255',
+            'applicant_email'   => 'required|email|max:255',
+            'print_name'       => 'required|string|max:255',
+            'address'          => 'required|string',
+            'certificate_type' => 'required|string',
+        ]);
+
+        try {
+            ContactDakhala::create($data);
+
+            return redirect()->back()
+                ->with('dakhala_success', 'आपला अर्ज यशस्वीरित्या सबमिट झाला आहे.')
+                ->withFragment('dakhala');
+
+        } catch (\Exception $e) {
+
+            \Log::error($e);
+
+            return redirect()->back()
+                ->with('dakhala_error', 'काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.')
+                ->withFragment('dakhala');
+        }
+    }
     
 }

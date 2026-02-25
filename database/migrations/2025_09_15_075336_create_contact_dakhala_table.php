@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('mobile_no');
             $table->string('applicant_name');
+            $table->string('applicant_email');
             $table->string('print_name');
             $table->string('address');
             $table->string('certificate_type');
