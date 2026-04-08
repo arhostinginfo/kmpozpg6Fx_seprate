@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Add Abhiyan')
+
 @section('content')
     <div class="row">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -38,9 +40,16 @@
                         </div>
 
 
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="is_active" class="form-control">
+                                <option value="1" selected>Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
                         <div class="form-group d-flex justify-content-end">
                             <a href="{{ route('abhiyan.list') }}" class="btn btn-secondary mr-2">Cancel</a>
-                            <button type="submit" class="btn btn-sm btn-outline-primary" >Save</button>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
                         </div>
                     </form>
                 </div>

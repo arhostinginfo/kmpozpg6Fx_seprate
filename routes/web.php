@@ -6,7 +6,10 @@ use App\Http\Controllers\Superadm\DashboardController;
 use App\Http\Controllers\Superadm\ChangePasswordController;
 use App\Http\Controllers\Superadm\DhakhalaController; 
 use App\Http\Controllers\Superadm\ContactusController; 
-use App\Http\Controllers\Superadm\PDFUploadController;  
+use App\Http\Controllers\Superadm\PDFUploadController;
+use App\Http\Controllers\Superadm\TaxDemandController;
+use App\Http\Controllers\Superadm\TaxDocumentController;
+use App\Http\Controllers\Superadm\TaxTipController;
 
 use App\Http\Controllers\Superadm\OfficerController;
 use App\Http\Controllers\Superadm\NavbarController; 
@@ -23,18 +26,17 @@ use App\Http\Controllers\FrontwebsitecontactController;
 
 use Illuminate\Support\Facades\Artisan;
 
-Route::get('/storage-link', function () {
-    Artisan::call('storage:link');
-    return 'Storage link created successfully!';
-});
+// storage:link should be run via CLI only: php artisan storage:link
 
 
 Route::post('/frontwebsitecontact', [FrontwebsitecontactController::class, 'store'])->name('frontwebsitecontact.store');
 Route::post('/dakhala-store', [WebSiteController::class, 'dakhalaStore'])->name('dakhala.store');
 Route::get('/', [WebSiteController::class, 'index'])->name('/');
+Route::get('/gallery/photos', [WebSiteController::class, 'galleryPhotos'])->name('gallery.photos');
+Route::get('/gallery/videos', [WebSiteController::class, 'galleryVideos'])->name('gallery.videos');
 
 Route::get('login', [LoginController::class, 'loginsuper'])->name('login');
-Route::post('superlogin', [LoginController::class, 'validateSuperLogin'])->name('superlogin');
+Route::post('superlogin', [LoginController::class, 'validateSuperLogin'])->name('superlogin')->middleware('throttle:5,1');
 
 Route::group(['middleware' => ['SuperAdmin']], function () {        
 
@@ -152,6 +154,33 @@ Route::group(['middleware' => ['SuperAdmin']], function () {
 
 
 
-    Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+    // Tax Demand (मागणी व वसुली)
+    Route::get('/tax-demand/list', [TaxDemandController::class, 'index'])->name('tax-demand.list');
+    Route::get('/tax-demand/add', [TaxDemandController::class, 'create'])->name('tax-demand.create');
+    Route::post('/tax-demand/add', [TaxDemandController::class, 'save'])->name('tax-demand.save');
+    Route::get('/tax-demand/edit/{encodedId}', [TaxDemandController::class, 'edit'])->name('tax-demand.edit');
+    Route::post('/tax-demand/update', [TaxDemandController::class, 'update'])->name('tax-demand.update');
+    Route::post('/tax-demand/delete', [TaxDemandController::class, 'delete'])->name('tax-demand.delete');
+    Route::post('/tax-demand/update-status', [TaxDemandController::class, 'updateStatus'])->name('tax-demand.updatestatus');
+
+    // Tax Tips (कर टीप)
+    Route::get('/tax-tip/list', [TaxTipController::class, 'index'])->name('tax-tip.list');
+    Route::get('/tax-tip/add', [TaxTipController::class, 'create'])->name('tax-tip.create');
+    Route::post('/tax-tip/add', [TaxTipController::class, 'save'])->name('tax-tip.save');
+    Route::get('/tax-tip/edit/{encodedId}', [TaxTipController::class, 'edit'])->name('tax-tip.edit');
+    Route::post('/tax-tip/update', [TaxTipController::class, 'update'])->name('tax-tip.update');
+    Route::post('/tax-tip/delete', [TaxTipController::class, 'delete'])->name('tax-tip.delete');
+    Route::post('/tax-tip/update-status', [TaxTipController::class, 'updateStatus'])->name('tax-tip.updatestatus');
+
+    // Tax Documents (PDF / QR)
+    Route::get('/tax-document/list', [TaxDocumentController::class, 'index'])->name('tax-document.list');
+    Route::get('/tax-document/add', [TaxDocumentController::class, 'create'])->name('tax-document.create');
+    Route::post('/tax-document/add', [TaxDocumentController::class, 'save'])->name('tax-document.save');
+    Route::get('/tax-document/edit/{encodedId}', [TaxDocumentController::class, 'edit'])->name('tax-document.edit');
+    Route::post('/tax-document/update', [TaxDocumentController::class, 'update'])->name('tax-document.update');
+    Route::post('/tax-document/delete', [TaxDocumentController::class, 'delete'])->name('tax-document.delete');
+    Route::post('/tax-document/update-status', [TaxDocumentController::class, 'updateStatus'])->name('tax-document.updatestatus');
+
+    Route::post('logout', [LoginController::class, 'logOut'])->name('logout');
 
 });

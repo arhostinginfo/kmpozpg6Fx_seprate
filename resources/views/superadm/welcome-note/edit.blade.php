@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Edit Welcome Note')
+
 @section('content')
     <div class="row">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -20,9 +22,8 @@
 
 
                         <div class="form-group">
-                            <label>Message <span class="text-danger">*</span></label>
-                            <input type="text" name="content" class="form-control"
-                                value="{{ old('content', $data->content) }}">
+                            <label>Content <span class="text-danger">*</span></label>
+                            <textarea name="content" id="editor" class="form-control" rows="6">{{ old('content', $data->content) }}</textarea>
                             @error('content')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -55,6 +56,10 @@
 
     <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
     <script>
-        CKEDITOR.replace('editor');
+        $(document).ready(function () {
+            if (typeof CKEDITOR !== 'undefined') {
+                CKEDITOR.replace('editor');
+            }
+        });
     </script>
 @endsection

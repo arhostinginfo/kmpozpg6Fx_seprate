@@ -9,5 +9,5 @@ class Abhiyans extends Model
     public $table = 'abhiyans';
     public $timestamps = true;
 
-    protected $fillable = ['abhiyan_name', 'abhiyan_date'];
+    protected $fillable = ['abhiyan_name', 'abhiyan_date', 'is_active', 'is_deleted'];
 }

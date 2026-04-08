@@ -137,15 +137,11 @@ class DhakhalaController extends Controller
 	public function updateStatus(Request $req)
 	{
 		try {
-			// dd($req);
-			 $id = base64_decode($req->id);
-           $data = [
-				'is_action_completed' => ($req->has('is_active') && $req->is_active) ? 0 : 1
-			];
-			ContactDakhala::where('id', $id)->update($data);
-			return redirect()->route('superadm.dakhala.list')->with('success', 'Dakhala status updated successfully.');
+			$req->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+			$id = base64_decode($req->id);
+			ContactDakhala::where('id', $id)->update(['is_action_completed' => $req->is_active]);
+			return redirect()->route('dakhala.list')->with('success', 'Dakhala status updated successfully.');
 		} catch (Exception $e) {
-			dd($e->getMessage());
 			return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());
 		}
 	}

@@ -23,15 +23,18 @@ class SliderController extends Controller
 
     public function save(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'photo' => 'required|image|mimes:jpeg,jpg,png|max:3072' // max 3MB
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072' // max 3MB
         ]);
 
+        $data = [
+            'name' => $request->name,
+            'is_active' => $request->is_active ?? 1,
+        ];
+
         if ($request->hasFile('photo')) {
-            // Save file to storage/app/public/Slider
             $data['photo'] = $request->file('photo')->store('slider', 'public');
-            $data['name'] = $request->input('name');
         }
 
         Slider::create($data);
@@ -57,18 +60,12 @@ class SliderController extends Controller
 
             $id = base64_decode($request->encodedId);
             $data = [
-                'name' => $request->name
-                // 'is_active' => $req->is_active
+                'name' => $request->name,
+                'is_active' => $request->is_active ?? 1,
             ];
 
         $officer = Slider::where('id', $id)->first();
         if ($request->hasFile('photo')) {
-            // remove old if exists
-
-             $data = $request->validate([
-                'photo' => 'required|image|mimes:jpeg,jpg,png|max:3072'
-            ]);
-
             if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
                 Storage::disk('public')->delete($officer->photo);
             }
@@ -78,6 +75,14 @@ class SliderController extends Controller
         $officer->update($data);
 
         return redirect()->route('slider.list')->with('success', 'Officer updated successfully.');
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+        $id = base64_decode($request->id);
+        Slider::where('id', $id)->update(['is_active' => $request->is_active]);
+        return redirect()->route('slider.list')->with('success', 'Status updated successfully.');
     }
 
     public function delete(Request $request)

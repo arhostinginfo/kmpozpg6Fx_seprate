@@ -9,5 +9,5 @@ class Yojna extends Model
     public $table = 'yojnas';
     public $timestamps = true;
 
-    protected $fillable = ['name','attachment','type_attachment', 'attachment_link'];
+    protected $fillable = ['name','attachment','type_attachment', 'attachment_link', 'is_active', 'is_deleted'];
 }

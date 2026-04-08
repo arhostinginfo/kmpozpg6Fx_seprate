@@ -10,8 +10,12 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3>PDF Upload</h3>
-                        <a href="{{ route('pdfupload.add') }}" class="btn btn-sm btn-outline-primary" >Add PDF</a>
+                        <a href="{{ route('pdfupload.add') }}" class="btn btn-sm btn-outline-primary">Add PDF</a>
                     </div>
+
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped datatables">
@@ -21,6 +25,7 @@
                                     <th>Type</th>
                                     <th>Name</th>
                                     <th>Attachment</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -31,25 +36,30 @@
                                         <td>{{ $data->type_attachment }}</td>
                                         <td>{{ $data->name }}</td>
                                         <td>
-                                           @if ($data->type_attachment == 'pdf')
-                                                <a href="{{ asset('storage/' . ($data->attachment ?? 'default.pdf')) }}" target="_blank">
-                                                    <img 
-                                                        src="{{ asset('images/pdf-icon.png') }}" 
-                                                        alt="{{ $data->name ?? 'PDF File' }}"
-                                                        class="img-fluid rounded mb-2"
-                                                        style="height:150px; width:150px;">
+                                            @if ($data->attachment)
+                                                <a href="{{ asset('storage/' . $data->attachment) }}" target="_blank" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-file-pdf"></i> PDF उघडा
                                                 </a>
                                             @endif
                                         </td>
                                         <td>
+                                            <form action="{{ route('pdfupload.updatestatus') }}" method="POST" class="d-inline-block">
+                                                @csrf
+                                                <label class="switch">
+                                                    <input type="checkbox" class="toggle-status"
+                                                        data-id="{{ base64_encode($data->id) }}"
+                                                        {{ $data->is_active == 1 ? 'checked' : '' }}>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <input type="hidden" name="id" value="{{ base64_encode($data->id) }}">
+                                            </form>
+                                        </td>
+                                        <td>
                                             <a href="{{ route('pdfupload.edit', base64_encode($data->id)) }}"
                                                 class="btn btn-sm btn-outline-primary">Edit</a>
-
-                                            <form action="{{ route('pdfupload.delete') }}" method="POST"
-                                                class="d-inline delete-form">
+                                            <form action="{{ route('pdfupload.delete') }}" method="POST" class="d-inline delete-form">
                                                 @csrf
-                                                <input type="hidden" name="encodedId"
-                                                    value="{{ base64_encode($data->id) }}">
+                                                <input type="hidden" name="encodedId" value="{{ base64_encode($data->id) }}">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                             </form>
                                         </td>
@@ -62,28 +72,25 @@
             </div>
         </div>
     </div>
-@endsection
 
-@push('scripts')
     <script>
-        $(document).ready(function() {
-            $('#officersTable').DataTable({
-                responsive: true,
-                paging: true,
-                searching: false,
-                lengthChange: false,
-                pageLength: 10,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/mr.json"
-                }
-            });
-
-            // simple delete confirm
-            $('.delete-form').on('submit', function(e) {
-                if (!confirm('तुम्हाला हा अधिकारी नक्की हटवायचा आहे का?')) {
-                    e.preventDefault();
-                }
+        $(document).on("change", ".toggle-status", function (e) {
+            e.preventDefault();
+            let checkbox = $(this);
+            let form = checkbox.closest("form");
+            let is_active = checkbox.is(":checked") ? 1 : 0;
+            Swal.fire({
+                title: "Are you sure?", text: "Do you want to change the status?", icon: "warning",
+                showCancelButton: true, confirmButtonColor: "#28a745", cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!", cancelButtonText: "No, cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.find("input[name='is_active']").length
+                        ? form.find("input[name='is_active']").val(is_active)
+                        : form.append(`<input type="hidden" name="is_active" value="${is_active}">`);
+                    form.submit();
+                } else { checkbox.prop("checked", !checkbox.is(":checked")); }
             });
         });
     </script>
-@endpush
+@endsection

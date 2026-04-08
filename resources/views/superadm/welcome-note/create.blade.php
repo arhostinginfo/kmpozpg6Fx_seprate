@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Add Welcome Note')
+
 @section('content')
     <div class="row">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -37,6 +39,10 @@
 
     <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
     <script>
-        CKEDITOR.replace('editor');
+        $(document).ready(function () {
+            if (typeof CKEDITOR !== 'undefined') {
+                CKEDITOR.replace('editor');
+            }
+        });
     </script>
 @endsection

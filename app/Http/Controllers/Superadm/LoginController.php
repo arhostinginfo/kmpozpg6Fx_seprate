@@ -53,15 +53,15 @@ class LoginController extends Controller
    {
       $req->validate(
          [
-            'superemail.required|email',
-            'superpassword.required'
+            'superemail'    => 'required|email',
+            'superpassword' => 'required|string|min:6',
          ],
          [
-            'superemail.email' => 'Enter proper email adddress',
-            'superemail.required' => 'Enter email adddress',
-            'superpassword.required' => 'Enter password'
+            'superemail.required'    => 'Enter email address',
+            'superemail.email'       => 'Enter a valid email address',
+            'superpassword.required' => 'Enter password',
+            'superpassword.min'      => 'Password must be at least 6 characters',
          ]
-
       );
    }
 

@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Contact Us')
+
 @section('content')
     <div class="row">
         <div class="col-12">

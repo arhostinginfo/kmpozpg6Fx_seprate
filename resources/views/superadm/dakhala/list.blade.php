@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Dakhala अर्ज')
+
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -48,7 +50,7 @@
                                         <td>{{ $abhiyan->address }}</td>
                                         <td>{{ $abhiyan->certificate_type }}</td>
                                         <td>
-                                            <form action="{{ route('contact.updatestatus') }}" method="POST"
+                                            <form action="{{ route('dakhala.updatestatus') }}" method="POST"
                                                 class="d-inline-block delete-form">
                                                 @csrf
                                                 <label class="switch">

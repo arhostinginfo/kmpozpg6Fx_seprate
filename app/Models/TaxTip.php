@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class TaxTip extends Model
+{
+    public $table = 'tax_tips';
+    public $timestamps = true;
+
+    protected $fillable = [
+        'tip_text',
+        'is_active',
+        'is_deleted',
+    ];
+}

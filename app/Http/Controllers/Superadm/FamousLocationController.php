@@ -23,21 +23,25 @@ class FamousLocationController extends Controller
 
     public function save(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'desc' => 'required|string|max:5255',
-            'photo' => 'required|image|mimes:jpeg,jpg,png|max:3072' // max 3MB
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072'
         ]);
+
+        $data = [
+            'name' => $request->name,
+            'desc' => $request->desc,
+            'is_active' => $request->is_active ?? 1,
+        ];
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('famouslocations', 'public');
-            $data['name'] = $request->input('name');
-            $data['desc'] = $request->input('desc');
         }
 
         Famouslocations::create($data);
 
-        return redirect()->route('famous-locations.list')->with('success', 'Officer added successfully.');
+        return redirect()->route('famous-locations.list')->with('success', 'Famous location added successfully.');
     }
 
     public function edit($encodedId)
@@ -49,50 +53,49 @@ class FamousLocationController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'encodedId' => 'required',
             'name' => 'required|string|max:255',
             'desc' => 'required|string|max:5255',
             'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072'
         ]);
 
+        $id = base64_decode($request->encodedId);
+        $data = [
+            'name' => $request->name,
+            'desc' => $request->desc,
+            'is_active' => $request->is_active ?? 1,
+        ];
 
-            $id = base64_decode($request->encodedId);
-            $data = [
-                'name' => $request->name,
-                'desc' => $request->desc
-                // 'is_active' => $req->is_active
-            ];
-
-        $officer = Famouslocations::where('id', $id)->first();
+        $location = Famouslocations::where('id', $id)->first();
         if ($request->hasFile('photo')) {
-            // remove old if exists
-             $data = $request->validate([
-                'photo' => 'required|image|mimes:jpeg,jpg,png|max:3072'
-            ]);
-
-            if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
-                Storage::disk('public')->delete($officer->photo);
+            if ($location->photo && Storage::disk('public')->exists($location->photo)) {
+                Storage::disk('public')->delete($location->photo);
             }
             $data['photo'] = $request->file('photo')->store('famouslocations', 'public');
         }
 
-        $officer->update($data);
+        $location->update($data);
 
-        return redirect()->route('famous-locations.list')->with('success', 'Officer updated successfully.');
+        return redirect()->route('famous-locations.list')->with('success', 'Famous location updated successfully.');
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+        $id = base64_decode($request->id);
+        Famouslocations::where('id', $id)->update(['is_active' => $request->is_active]);
+        return redirect()->route('famous-locations.list')->with('success', 'Status updated successfully.');
     }
 
     public function delete(Request $request)
     {
         $id = base64_decode($request->encodedId);
-        $officer = Famouslocations::findOrFail($id);
-        // delete file from storage if present
-        if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
-            Storage::disk('public')->delete($officer->photo);
+        $location = Famouslocations::findOrFail($id);
+        if ($location->photo && Storage::disk('public')->exists($location->photo)) {
+            Storage::disk('public')->delete($location->photo);
         }
-
-        $officer = Famouslocations::where ('id', $id)->update(['is_deleted' => 1]);
-
-        return redirect()->route('famous-locations.list')->with('success', 'Officer deleted successfully.');
+        Famouslocations::where('id', $id)->update(['is_deleted' => 1]);
+        return redirect()->route('famous-locations.list')->with('success', 'Famous location deleted successfully.');
     }
 }

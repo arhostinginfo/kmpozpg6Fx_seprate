@@ -9,6 +9,6 @@ class PDFUpload extends Model
     public $table = 'pdfview';
     public $timestamps = true;
 
-   protected $fillable = ['name','attachment','type_attachment'];
+   protected $fillable = ['name','attachment','type_attachment', 'attachment_link', 'is_active', 'is_deleted'];
 
 }

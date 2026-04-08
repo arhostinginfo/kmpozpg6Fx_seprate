@@ -9,6 +9,6 @@ class Famouslocations extends Model
      public $table = 'famouslocations';
     public $timestamps = true;
 
-    protected $fillable = ['name', 'desc', 'photo'];
+    protected $fillable = ['name', 'desc', 'photo', 'is_active', 'is_deleted'];
 
 }

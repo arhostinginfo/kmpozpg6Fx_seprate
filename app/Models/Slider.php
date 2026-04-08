@@ -9,6 +9,6 @@ class Slider extends Model
      public $table = 'sliders';
     public $timestamps = true;
 
-    protected $fillable = ['name','photo'];
+    protected $fillable = ['name','photo', 'is_active', 'is_deleted'];
 
 }

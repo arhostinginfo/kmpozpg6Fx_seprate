@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Marquee')
+
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -50,7 +52,7 @@
                                                 @csrf
                                                 <input type="hidden" name="id"
                                                     value="{{ base64_encode($role->id) }}">
-                                                <button type="button"
+                                                <button type="submit"
                                                     class="btn btn-sm btn-outline-danger">Delete</button>
                                             </form>
                                         </td>

@@ -35,18 +35,10 @@ class NavbarController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072' // max 3MB
         ]);
 
-        if ($request->hasFile('logo')) {
-            // Save file to storage/app/public/Slider
-            $data['logo'] = $request->file('logo')->store('navbar', 'public');
-            $data['name'] = $request->input('name');
+        $data['is_active'] = $request->is_active ?? 1;
 
-            $data['footer_desc'] = $request->input('footer_desc');
-            $data['address'] = $request->input('address');
-            $data['contact_number'] = $request->input('contact_number');
-            $data['email_id'] = $request->input('email_id');
-            $data['color'] = $request->input('color');
-            $data['lat'] = $request->input('lat');
-            $data['lon'] = $request->input('lon');
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $request->file('logo')->store('navbar', 'public');
         }
 
         Navbars::create($data);
@@ -73,30 +65,30 @@ class NavbarController extends Controller
             'name' => 'required|string|max:255',
             'lat' => 'required|string|max:255',
             'lon' => 'required|string|max:255',
-            'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072'
+            'logo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072'
         ]);
 
 
             $id = base64_decode($request->encodedId);
             $data = [
                 'name' => $request->name,
-				'footer_desc' =>$request->footer_desc,
-				'address' =>$request->address,
-				'contact_number' =>$request->contact_number,
-				'email_id' =>$request->email_id,
-				'color' =>$request->color,
-				'lat' =>$request->lat,
-				'lon' =>$request->lon,
-                // 'is_active' => $req->is_active
+                'footer_desc' => $request->footer_desc,
+                'address' => $request->address,
+                'contact_number' => $request->contact_number,
+                'email_id' => $request->email_id,
+                'color' => $request->color,
+                'lat' => $request->lat,
+                'lon' => $request->lon,
+                'is_active' => $request->is_active ?? 1,
             ];
 
         $officer = Navbars::where('id', $id)->first();
-        if ($request->hasFile('photo')) {
+        if ($request->hasFile('logo')) {
             // remove old if exists
-            if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
-                Storage::disk('public')->delete($officer->photo);
+            if ($officer->logo && Storage::disk('public')->exists($officer->logo)) {
+                Storage::disk('public')->delete($officer->logo);
             }
-            $data['photo'] = $request->file('photo')->store('navbar', 'public');
+            $data['logo'] = $request->file('logo')->store('navbar', 'public');
         }
 
         $officer->update($data);
@@ -104,13 +96,21 @@ class NavbarController extends Controller
         return redirect()->route('navbar.list')->with('success', 'Officer updated successfully.');
     }
 
+    public function updateStatus(Request $request)
+    {
+        $request->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+        $id = base64_decode($request->id);
+        Navbars::where('id', $id)->update(['is_active' => $request->is_active]);
+        return redirect()->route('navbar.list')->with('success', 'Status updated successfully.');
+    }
+
     public function delete(Request $request)
     {
         $id = base64_decode($request->encodedId);
         $officer = Navbars::findOrFail($id);
         // delete file from storage if present
-        if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
-            Storage::disk('public')->delete($officer->photo);
+        if ($officer->logo && Storage::disk('public')->exists($officer->logo)) {
+            Storage::disk('public')->delete($officer->logo);
         }
 
         $officer = Navbars::where ('id', $id)->update(['is_deleted' => 1]);

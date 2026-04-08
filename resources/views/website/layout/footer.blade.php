@@ -5,80 +5,101 @@
 
  <script>
      document.addEventListener('DOMContentLoaded', function() {
+         // Photo modal — populate image + title + caption
          const photoModal = document.getElementById('photoModal');
-         photoModal.addEventListener('show.bs.modal', function(event) {
-             let trigger = event.relatedTarget;
-             let imageSrc = trigger.getAttribute('data-bs-image');
-             let modalImage = photoModal.querySelector('#modalImage');
-             modalImage.src = imageSrc;
-         });
+         if (photoModal) {
+             photoModal.addEventListener('show.bs.modal', function(event) {
+                 const trigger  = event.relatedTarget;
+                 const src      = trigger.getAttribute('data-bs-image') || '';
+                 const name     = trigger.getAttribute('data-bs-name')  || '';
+                 photoModal.querySelector('#modalImage').src               = src;
+                 photoModal.querySelector('#photoModalTitle').textContent   = name;
+                 photoModal.querySelector('#photoModalCaption').textContent = name;
+             });
+         }
+
+         // Video modal — pause on close
+         const indexVideoModal = document.getElementById('indexVideoModal');
+         if (indexVideoModal) {
+             indexVideoModal.addEventListener('hide.bs.modal', function () {
+                 const player = document.getElementById('indexVideoPlayer');
+                 if (player) { player.pause(); player.currentTime = 0; }
+             });
+         }
      });
 
+     function openIndexVideoModal(src, name) {
+         document.getElementById('indexVideoSource').src              = src;
+         document.getElementById('indexVideoModalTitle').textContent   = name;
+         document.getElementById('indexVideoCaption').textContent      = name;
+         const player = document.getElementById('indexVideoPlayer');
+         if (player) player.load();
+         const modal = new bootstrap.Modal(document.getElementById('indexVideoModal'));
+         modal.show();
+     }
+     window.openIndexVideoModal = openIndexVideoModal;
 
-     // Coordinates for Panchayat Samiti Nandgaon
+     // Map
      const nandgaonLatLng = ['{{ $navbar->lat ?? '00.000' }}', '{{ $navbar->lon ?? '00.000' }}'];
-
-     // Initialize the map
      const map = L.map('leafletMap').setView(nandgaonLatLng, 15);
-
-     // Add OpenStreetMap tiles
      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
          attribution: '© OpenStreetMap contributors',
          maxZoom: 10,
      }).addTo(map);
-
-     // Add marker
      const marker = L.marker(nandgaonLatLng).addTo(map);
      marker.bindPopup("<b>{{ $navbar->name ?? 'Name ' }} {{ $navbar->address ?? 'Address' }}").openPopup();
  </script>
  </main>
- <!-- Footer Updated-->
+
+ <!-- Footer -->
  <footer>
-     <div class="container">
-         <div class="row">
-             <div class="col-md-4 mb-3">
-                 <h5>{{ $navbar->name ?? 'पंचायत समिती' }}</h5>
-                 <p>{{ $navbar->footer_desc ?? 'पंचायत समिती' }}</p>
+     <div class="container" style="max-width: var(--container-max);">
+         <div class="row g-4">
+             <div class="col-md-4">
+                 <h5>{{ $navbar->name ?? 'ग्रामपंचायत' }}</h5>
+                 <p>{{ $navbar->footer_desc ?? '' }}</p>
              </div>
-             <div class="col-md-4 mb-3">
-                 <h5>झटपट दुवे</h5>
-                 <p><a href="#welcome">स्वागत</a></p>
-                 <p><a href="#news">अभियान</a></p>
-                 <p><a href="#schemes">शासकीय योजना</a></p>
-                 <p><a href="#places">प्रसिद्ध स्थळे</a></p>
+             <div class="col-md-4">
+                 <h5 data-mr="झटपट दुवे" data-en="Quick Links">झटपट दुवे</h5>
+                 <p><a class="gp-nav-anchor" href="#welcome"        data-mr="🏠 स्वागत"                                    data-en="🏠 Welcome">🏠 स्वागत</a></p>
+                 <p><a class="gp-nav-anchor" href="#news"           data-mr="📋 मुख्यमंत्री समृद्ध पंचायतराज अभियान"    data-en="📋 CM Samrudh Panchayatraj">📋 मुख्यमंत्री समृद्ध पंचायतराज अभियान</a></p>
+                 <p><a class="gp-nav-anchor" href="#schemes"        data-mr="📌 शासकीय योजना"                             data-en="📌 Govt. Schemes">📌 शासकीय योजना</a></p>
+                 <p><a class="gp-nav-anchor" href="#places"         data-mr="📍 प्रसिद्ध स्थळे"                          data-en="📍 Famous Places">📍 प्रसिद्ध स्थळे</a></p>
+                 <p><a class="gp-nav-anchor" href="#ghar-patti-tax" data-mr="💰 कर व्यवस्थापन"                           data-en="💰 Tax Management">💰 कर व्यवस्थापन</a></p>
              </div>
-             <div class="col-md-4 mb-3">
-                 <h5>संपर्क</h5>
-                 <p>📍 {{ $navbar->address ?? 'पंचायत समिती' }}</p>
-                 <p>📧 {{ $navbar && $navbar->email_id != 'dummy@gmail.com' ? $navbar->email_id : '' }}</p>
-                 <p>📞
-                     @if (optional($navbar)->contact_number == '0000000')
-                         {{ '' }}
-                     @else
-                         {{ optional($navbar)->contact_number ?? '1234567890' }}
-                     @endif
-                 </p>
+             <div class="col-md-4">
+                 <h5 data-mr="संपर्क" data-en="Contact">संपर्क</h5>
+                 @if(!empty($navbar->address))
+                     <p>📍 {{ $navbar->address }}</p>
+                 @endif
+                 @if(!empty($navbar->email_id) && $navbar->email_id != 'dummy@gmail.com')
+                     <p>📧 <a href="mailto:{{ $navbar->email_id }}">{{ $navbar->email_id }}</a></p>
+                 @endif
+                 @if(!empty($navbar->contact_number) && $navbar->contact_number != '0000000')
+                     <p>📞 <a href="tel:{{ $navbar->contact_number }}">{{ $navbar->contact_number }}</a></p>
+                 @endif
              </div>
          </div>
-         <div class="text-center mt-3">
-             © {{ $navbar->name ?? 'पंचायत समिती' }} • <span id="year"></span>
+         <hr style="border-color: rgba(255,255,255,0.15); margin: 20px 0 12px;">
+         <div class="text-center" style="font-size:var(--fs-xs); opacity:0.8; letter-spacing:0.03em;">
+             © {{ $navbar->name ?? 'ग्रामपंचायत' }} &nbsp;•&nbsp; <span id="year"></span> &nbsp;•&nbsp; महाराष्ट्र शासन
          </div>
      </div>
  </footer>
+
  <script>
      document.getElementById("year").textContent = new Date().getFullYear();
  </script>
  <!-- Back to top -->
  <button id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
  <!-- Scripts -->
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
  <script>
      AOS.init();
      const root = document.documentElement;
-     const minFont = 12,
-         maxFont = 24,
-         defaultFont = 16;
+     const minFont = 12, maxFont = 24, defaultFont = 16;
      let currentFont = parseInt(getComputedStyle(document.documentElement).fontSize) || defaultFont;
 
      function applyRootFont(size) {
@@ -89,45 +110,46 @@
      }
      document.getElementById('increaseFont').addEventListener('click', () => applyRootFont(currentFont + 1));
      document.getElementById('decreaseFont').addEventListener('click', () => applyRootFont(currentFont - 1));
-     document.getElementById('resetFont').addEventListener('click', () => applyRootFont(defaultFont));
+     document.getElementById('resetFont').addEventListener('click',    () => applyRootFont(defaultFont));
 
      function toggleDark() {
-         document.body.classList.toggle('dark');
+         const isDark = document.body.classList.toggle('dark');
+         const icon   = document.querySelector('.theme-toggle');
+         if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+         localStorage.setItem('gp_dark_mode', isDark ? '1' : '0');
      }
      window.toggleDark = toggleDark;
 
+     // Restore dark mode
+     (function () {
+         if (localStorage.getItem('gp_dark_mode') === '1') {
+             document.body.classList.add('dark');
+             document.addEventListener('DOMContentLoaded', function () {
+                 var icon = document.querySelector('.theme-toggle');
+                 if (icon) icon.textContent = '☀️';
+             });
+         }
+     })();
+
      function applyColor(color) {
          root.style.setProperty('--primary', color);
-
-         // Update all buttons
          document.querySelectorAll('.btn-primary').forEach(el => {
              el.style.backgroundColor = color;
              el.style.borderColor = color;
          });
-
-         // Update navbar to solid color (no gradient)
-         document.querySelectorAll('.navbar').forEach(n => {
-             n.style.background = color;
-         });
-
-         // Update footer to solid color
+         document.querySelectorAll('.navbar').forEach(n => { n.style.background = color; });
          const footer = document.querySelector('footer');
          if (footer) footer.style.background = color;
-
-         // Update back to top button
          const back = document.getElementById('backToTop');
          if (back) back.style.backgroundColor = color;
      }
 
-     function toggleColorPicker() {
-         const el = document.getElementById('colorPicker');
-         el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-     }
+     function toggleColorPicker() { /* color picker UI removed */ }
      window.toggleColorPicker = toggleColorPicker;
-     let marqueeRunning = true;
 
+     let marqueeRunning = true;
      function toggleMarquee() {
-         const m = document.getElementById('marqueeText');
+         const m   = document.getElementById('marqueeText');
          const btn = document.getElementById('marqueeToggle');
          if (!m) return;
          if (marqueeRunning) {
@@ -140,7 +162,6 @@
          marqueeRunning = !marqueeRunning;
      }
      window.toggleMarquee = toggleMarquee;
-     // const back = document.getElementById('backToTop'); window.addEventListener('scroll', () => { if (window.scrollY > 300) back.style.display = 'block'; else back.style.display = 'none'; }); back.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
      /* Back to top */
      let backToTop = document.getElementById("backToTop");
@@ -151,41 +172,77 @@
              backToTop.style.display = "none";
          }
      };
-     backToTop.onclick = function() {
-         window.scrollTo({
-             top: 0,
-             behavior: 'smooth'
-         });
-     };
+     backToTop.onclick = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
      document.addEventListener('DOMContentLoaded', () => {
-         applyColor(document.getElementById('colorPicker').value || getComputedStyle(root).getPropertyValue(
-             '--primary').trim());
+         applyColor(getComputedStyle(root).getPropertyValue('--primary').trim() || '#006699');
          applyRootFont(currentFont);
      });
  </script>
+
  <script>
      $(document).ready(function() {
-
-         applyColor('{{ $navbar->color ?? 'red' }}');
+         applyColor('{{ $navbar->color ?? '#006699' }}');
          $('.dataTables_wrapper .dataTables_paginate .paginate_button').addClass('btn btn-sm');
-
-         /* DataTables init */
          $('.newsTable').DataTable({
-
              paging: true,
              searching: false,
              lengthChange: false,
              pageLength: 10,
              responsive: true,
-             responsive: true,
-             language: {
-                 url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/mr.json"
-             },
+             language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/mr.json" },
              ordering: false
          });
-
      });
+ </script>
+
+ {{-- Fix anchor-only nav links when not on homepage --}}
+ {{-- homeUrl uses Laravel's url('/') helper — fully dynamic, no hardcoded domain --}}
+ <script>
+     (function () {
+         var homeUrl     = '{{ url('/') }}';               // e.g. http://localhost/GPcYNxkSZ
+         var homePath    = new URL(homeUrl).pathname.replace(/\/+$/, ''); // e.g. /GPcYNxkSZ
+         var currentPath = window.location.pathname.replace(/\/+$/, '');  // e.g. /GPcYNxkSZ/gallery/photos
+
+         // Only rewrite when NOT on the homepage
+         if (currentPath !== homePath) {
+             document.querySelectorAll('a.gp-nav-anchor').forEach(function (link) {
+                 var hash = link.getAttribute('href');
+                 if (hash && hash.startsWith('#')) {
+                     // homeUrl already has no trailing slash; hash starts with #
+                     // Result: http://localhost/GPcYNxkSZ#welcome  (no stray slash)
+                     link.setAttribute('href', homeUrl + hash);
+                 }
+             });
+         }
+     })();
+ </script>
+
+ {{-- Language Toggle --}}
+ <script>
+     (function () {
+         let currentLang = 'mr';
+         function applyLang(lang) {
+             document.querySelectorAll('[data-mr][data-en]').forEach(function (el) {
+                 el.textContent = el.getAttribute('data-' + lang);
+             });
+             document.querySelectorAll('[data-mr-ph][data-en-ph]').forEach(function (el) {
+                 el.placeholder = el.getAttribute('data-' + lang + '-ph');
+             });
+             var btn = document.getElementById('lang-toggle');
+             if (btn) btn.textContent = lang === 'mr' ? 'English' : 'मराठी';
+             document.documentElement.lang = lang === 'mr' ? 'mr' : 'en';
+             currentLang = lang;
+         }
+         document.addEventListener('DOMContentLoaded', function () {
+             var btn = document.getElementById('lang-toggle');
+             if (btn) {
+                 btn.addEventListener('click', function () {
+                     applyLang(currentLang === 'mr' ? 'en' : 'mr');
+                 });
+             }
+         });
+     })();
  </script>
  </body>
 

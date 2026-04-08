@@ -117,9 +117,9 @@ class MarqueeController extends Controller
 	public function updateStatus(Request $req)
 	{
 		try {
-			 $id = base64_decode($req->id);
-            $data = ['is_active' => $req->is_active];
-			Marquees::where('id', $id)->update($data);
+			$req->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+			$id = base64_decode($req->id);
+			Marquees::where('id', $id)->update(['is_active' => $req->is_active]);
 			return redirect()->route('marquee.list')->with('success', 'Marque status updated successfully.');
 		} catch (Exception $e) {
 			return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());

@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Edit Marquee')
+
 @section('content')
     <div class="row">
         <div class="col-lg-6 col-md-8 mx-auto">

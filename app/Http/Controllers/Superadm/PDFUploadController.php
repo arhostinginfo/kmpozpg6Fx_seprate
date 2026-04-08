@@ -5,21 +5,12 @@ use App\Http\Controllers\Controller;
 use App\Models\PDFUpload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Session;
 
 class PDFUploadController extends Controller
 {
-
-
-    public function __construct()
-   {
-   }
-
     public function list()
     {
-        $gallaries = PDFUpload::where([
-					'is_deleted'=>0,
-				])
+        $gallaries = PDFUpload::where('is_deleted', 0)
                 ->orderBy('id', 'desc')
                 ->get();
         return view('superadm.pdfupload.list', compact('gallaries'));
@@ -32,27 +23,27 @@ class PDFUploadController extends Controller
 
     public function save(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'type_attachment' => 'required|max:255', //Sadsya or officer
+            'type_attachment' => 'required|max:255',
             'attachment' => 'nullable|mimes:pdf|max:102400',
-            'attachment_link'  => 'nullable|url|max:255',
+            'attachment_link' => 'nullable|url|max:255',
         ]);
 
+        $data = [
+            'name' => $request->name,
+            'type_attachment' => $request->type_attachment,
+            'attachment_link' => $request->attachment_link,
+            'is_active' => $request->is_active ?? 1,
+        ];
+
         if ($request->hasFile('attachment')) {
-            // Save file to storage/app/public/officers
-
-            $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'type_attachment' => 'required|max:255', //Sadsya or officer
-                'attachment' => 'nullable|mimes:pdf|max:102400',
-            ]);
-
-            $data['attachment'] = $request->file('attachment')->store('/pdfupload', 'public');
+            $data['attachment'] = $request->file('attachment')->store('pdfupload', 'public');
         }
+
         PDFUpload::create($data);
 
-        return redirect()->route('pdfupload.list')->with('success', 'Officer added successfully.');
+        return redirect()->route('pdfupload.list')->with('success', 'PDF added successfully.');
     }
 
     public function edit($encodedId)
@@ -64,46 +55,48 @@ class PDFUploadController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'encodedId' => 'required',
             'name' => 'required|string|max:255',
-            'type_attachment' => 'required|max:255', //Sadsya or officer
+            'type_attachment' => 'required|max:255',
         ]);
 
+        $id = base64_decode($request->encodedId);
+        $data = [
+            'name' => $request->name,
+            'type_attachment' => $request->type_attachment,
+            'is_active' => $request->is_active ?? 1,
+        ];
 
-            $id = base64_decode($request->encodedId);
-            $data = [
-                'designation' => $request->input('designation'),
-                'name' => $request->input('name'),
-                'type_attachment' => $request->input('type_attachment'), 
-                // 'is_active' => $req->is_active
-            ];
-
-        $officer = PDFUpload::where('id', $id)->first();
+        $pdf = PDFUpload::where('id', $id)->first();
         if ($request->hasFile('attachment')) {
-            // remove old if exists
-            if ($officer->attachment && Storage::disk('public')->exists($officer->attachment)) {
-                Storage::disk('public')->delete($officer->attachment);
+            if ($pdf->attachment && Storage::disk('public')->exists($pdf->attachment)) {
+                Storage::disk('public')->delete($pdf->attachment);
             }
-            $data['attachment'] = $request->file('attachment')->store('/pdfupload',  'public');
+            $data['attachment'] = $request->file('attachment')->store('pdfupload', 'public');
         }
 
-        $officer->update($data);
+        $pdf->update($data);
 
-        return redirect()->route('pdfupload.list')->with('success', 'Officer updated successfully.');
+        return redirect()->route('pdfupload.list')->with('success', 'PDF updated successfully.');
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+        $id = base64_decode($request->id);
+        PDFUpload::where('id', $id)->update(['is_active' => $request->is_active]);
+        return redirect()->route('pdfupload.list')->with('success', 'PDF status updated successfully.');
     }
 
     public function delete(Request $request)
     {
         $id = base64_decode($request->encodedId);
-        $officer = PDFUpload::findOrFail($id);
-        // delete file from storage if present
-        if ($officer->attachment && Storage::disk('public')->exists($officer->attachment)) {
-            Storage::disk('public')->delete($officer->attachment);
+        $pdf = PDFUpload::findOrFail($id);
+        if ($pdf->attachment && Storage::disk('public')->exists($pdf->attachment)) {
+            Storage::disk('public')->delete($pdf->attachment);
         }
-
-        $officer = PDFUpload::where ('id', $id)->update(['is_deleted' => 1]);
-        return redirect()->route('pdfupload.list')->with('success', 'Officer deleted successfully.');
+        PDFUpload::where('id', $id)->update(['is_deleted' => 1]);
+        return redirect()->route('pdfupload.list')->with('success', 'PDF deleted successfully.');
     }
 }
-

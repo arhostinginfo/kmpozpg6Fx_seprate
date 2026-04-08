@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp \"D:/xampp/htdocs/g110ZU-L-Common/public/asset/dummy_images/gov.svg\" \"D:/xampp/htdocs/GPcYNxkSZ/public/asset/dummy_images/gov.svg\")",
+      "Bash(cp \"D:/xampp/htdocs/g110ZU-L-Common/public/asset/dummy_images/gp.png\" \"D:/xampp/htdocs/GPcYNxkSZ/public/asset/dummy_images/gp.png\")",
+      "Bash(cp \"D:/xampp/htdocs/g110ZU-L-Common/public/asset/dummy_images/person.jpg\" \"D:/xampp/htdocs/GPcYNxkSZ/public/asset/dummy_images/person.jpg\")",
+      "Bash(cp \"D:/xampp/htdocs/g110ZU-L-Common/public/asset/dummy_images/other_logo/digitalindia.webp\" \"D:/xampp/htdocs/GPcYNxkSZ/public/asset/dummy_images/other_logo/digitalindia.webp\")",
+      "Bash(cp \"D:/xampp/htdocs/g110ZU-L-Common/public/asset/dummy_images/other_logo/incredible.webp\" \"D:/xampp/htdocs/GPcYNxkSZ/public/asset/dummy_images/other_logo/incredible.webp\")",
+      "Bash(php artisan:*)",
+      "Bash(D:/xampp/php/php.exe artisan:*)",
+      "Bash(grep -l \"\\\\.switch\" \"D:/xampp/htdocs/GPcYNxkSZ/public/asset/css/\"*.css)",
+      "Bash(\"D:/xampp/apache/bin/httpd.exe\" -k restart)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(tasklist)",
+      "Bash(taskkill //F //IM httpd.exe)",
+      "Bash(start \"\" \"D:/xampp/apache/bin/httpd.exe\")",
+      "Bash(curl:*)",
+      "Bash(grep -A5 \"protected.*fillable\" /d/xampp/htdocs/GPcYNxkSZ/app/Models/*.php)",
+      "Bash(grep -r \"html\\\\|strip\" /d/xampp/htdocs/GPcYNxkSZ/app/Http/Controllers/Superadm/*.php)",
+      "Bash(grep:*)"
+    ]
+  }
+}

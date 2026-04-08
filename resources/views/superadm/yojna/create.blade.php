@@ -52,9 +52,16 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="is_active" class="form-control">
+                                <option value="1" selected>Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
                         <div class="form-group d-flex justify-content-end">
                             <a href="{{ route('yojna.list') }}" class="btn btn-secondary mr-2">Cancel</a>
-                            <button class="btn btn-sm btn-outline-primary" >Save</button>
+                            <button class="btn btn-sm btn-outline-primary">Save</button>
                         </div>
                     </form>
                 </div>

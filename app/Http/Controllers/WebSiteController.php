@@ -14,7 +14,10 @@ use App\Models\
     Abhiyans,
     Gallary,
     PDFUpload,
-    ContactDakhala
+    ContactDakhala,
+    TaxDemand,
+    TaxDocument,
+    TaxTip
 
 };
 use Illuminate\Http\Request;
@@ -48,23 +51,17 @@ class WebSiteController extends Controller
 
 
 
-        $gallaries = Gallary::where('is_deleted',0)
+        $gallay_photos = Gallary::where('is_deleted', 0)
                 ->where('is_active', 1)
-                ->orderBy('id', 'desc')
+                ->where('type_attachment', 'Image')
+                ->latest()
                 ->get();
 
-        $gallay_photos = $gallaries->where('type_attachment', 'Image');
-        if($gallay_photos) {
-                $gallay_photos =$gallay_photos;
-        } else {
-            $gallay_photos = [
-                        [
-                                'name' => 'Test',
-                                'attachment' => asset('storage/default.jpg'),
-                        ],
-                ];
-        }
-        $gallay_videos  = $gallaries->where('type_attachment', 'Video');
+        $gallay_videos = Gallary::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->where('type_attachment', 'Video')
+                ->latest()
+                ->get();
 
 
         $navbar =  Navbars::where('is_deleted',0)
@@ -106,7 +103,40 @@ class WebSiteController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
 
-        return view('website.index', compact('welcomenote','gallay_photos', 'gallay_videos', 'navbar', 'slider', 'marquee', 'famouslocations', 'AbhiyanAll', 'yojna_all','officerData','sadsyaAll','pdf_all'));
+        $taxDemands = TaxDemand::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->orderByRaw("FIELD(tax_type,'ghar_patti','paani_patti','other')")
+                ->orderByRaw("FIELD(year_type,'chalu','magil')")
+                ->get();
+
+        // View uses $gharPattiDemands['magil'] and $gharPattiDemands['chalu'] — key by year_type
+        $gharPattiDemands  = $taxDemands->where('tax_type', 'ghar_patti')->keyBy('year_type');
+        $paaniPattiDemands = $taxDemands->where('tax_type', 'paani_patti')->keyBy('year_type');
+        $otherDemands      = $taxDemands->where('tax_type', 'other')->keyBy('year_type');
+
+        // View uses $taxDocuments['ghar_patti']['view_pdf'][0] — nest as [tax_type][document_type][index]
+        $taxDocumentsRaw = TaxDocument::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->orderByRaw("FIELD(tax_type,'ghar_patti','paani_patti','other')")
+                ->orderByRaw("FIELD(document_type,'view_pdf','payment_qr')")
+                ->get();
+
+        $taxDocuments = [];
+        foreach ($taxDocumentsRaw as $doc) {
+            $taxDocuments[$doc->tax_type][$doc->document_type][] = $doc;
+        }
+
+        // Latest active tax tip
+        $taxTip = TaxTip::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->latest()
+                ->first();
+
+        return view('website.index', compact(
+            'welcomenote', 'gallay_photos', 'gallay_videos', 'navbar', 'slider', 'marquee',
+            'famouslocations', 'AbhiyanAll', 'yojna_all', 'officerData', 'sadsyaAll', 'pdf_all',
+            'gharPattiDemands', 'paaniPattiDemands', 'otherDemands', 'taxDocuments', 'taxTip'
+        ));
     }
 
 
@@ -138,6 +168,38 @@ class WebSiteController extends Controller
         }
     }
 
+
+    public function galleryPhotos()
+    {
+        $gallay_photos = Gallary::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->where('type_attachment', 'Image')
+                ->latest()
+                ->paginate(12);
+
+        $navbar = Navbars::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->orderBy('id', 'desc')
+                ->first();
+
+        return view('website.gallery.photos', compact('gallay_photos', 'navbar'));
+    }
+
+    public function galleryVideos()
+    {
+        $gallay_videos = Gallary::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->where('type_attachment', 'Video')
+                ->latest()
+                ->paginate(9);
+
+        $navbar = Navbars::where('is_deleted', 0)
+                ->where('is_active', 1)
+                ->orderBy('id', 'desc')
+                ->first();
+
+        return view('website.gallery.videos', compact('gallay_videos', 'navbar'));
+    }
 
         public function contactStore(Request $request)
     {

@@ -48,6 +48,7 @@ class AbhiyansController extends Controller
 			$data = [
                 'abhiyan_name' => $req->input('abhiyan_name'),
                 'abhiyan_date' => $req->input('abhiyan_date'),
+                'is_active' => $req->input('is_active', 1),
             ];
 			Abhiyans::create($data);
 			return redirect()->route('abhiyan.list')->with('success', 'Abhiyan added successfully.');
@@ -123,9 +124,9 @@ class AbhiyansController extends Controller
 	public function updateStatus(Request $req)
 	{
 		try {
-			 $id = base64_decode($req->id);
-            $data = ['is_active' => $req->is_active];
-			Abhiyans::where('id', $id)->update($data);
+			$req->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+			$id = base64_decode($req->id);
+			Abhiyans::where('id', $id)->update(['is_active' => $req->is_active]);
 			return redirect()->route('abhiyan.list')->with('success', 'Abhiyan status updated successfully.');
 		} catch (Exception $e) {
 			return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());

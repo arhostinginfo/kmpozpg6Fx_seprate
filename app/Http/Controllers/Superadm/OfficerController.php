@@ -23,25 +23,35 @@ class OfficerController extends Controller
 
     public function save(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'designation' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'mobile' => ['required','string','max:15'],
             'email' => 'required|email|max:255',
-            'type' => 'required|max:255', //Sadsya or officer
-            'sequence_officer' => 'required|max:255', //sequence officer
-            'sequence_general' => 'required|max:255', //sequence Sadsya
-            'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072' // max 3MB
+            'type' => 'required|max:255',
+            'sequence_officer' => 'required|max:255',
+            'sequence_general' => 'required|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,jpg,png|max:3072'
         ]);
 
+        $data = [
+            'designation' => $request->designation,
+            'name' => $request->name,
+            'mobile' => $request->mobile,
+            'email' => $request->email,
+            'type' => $request->type,
+            'sequence_officer' => $request->sequence_officer,
+            'sequence_general' => $request->sequence_general,
+            'is_active' => $request->is_active ?? 1,
+        ];
+
         if ($request->hasFile('photo')) {
-            // Save file to storage/app/public/officers
             $data['photo'] = $request->file('photo')->store('officers', 'public');
         }
 
         Officers::create($data);
 
-        return redirect()->route('officers.list')->with('success', 'Officer added successfully.');
+        return redirect()->route('officers.list')->with('success', 'Member added successfully.');
     }
 
     public function edit($encodedId)
@@ -53,33 +63,31 @@ class OfficerController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'encodedId' => 'required',
             'designation' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'mobile' => ['required','string','max:15'],
             'email' => 'required|email|max:255',
-            'type' => 'required|max:255', //Sadsya or officer
-            'sequence_officer' => 'required|max:255', //sequence officer
-            'sequence_general' => 'required|max:255', //sequence Sadsya
+            'type' => 'required|max:255',
+            'sequence_officer' => 'required|max:255',
+            'sequence_general' => 'required|max:255',
         ]);
 
-
-            $id = base64_decode($request->encodedId);
-            $data = [
-                'designation' => $request->input('designation'),
-                'name' => $request->input('name'),
-                'mobile' => $request->input('mobile'),
-                'email' => $request->input('email'),
-                'type' => $request->input('type'),
-                'sequence_officer' => $request->input('sequence_officer'),
-                'sequence_general' => $request->input('sequence_general'),
-                // 'is_active' => $req->is_active
-            ];
+        $id = base64_decode($request->encodedId);
+        $data = [
+            'designation' => $request->designation,
+            'name' => $request->name,
+            'mobile' => $request->mobile,
+            'email' => $request->email,
+            'type' => $request->type,
+            'sequence_officer' => $request->sequence_officer,
+            'sequence_general' => $request->sequence_general,
+            'is_active' => $request->is_active ?? 1,
+        ];
 
         $officer = Officers::where('id', $id)->first();
         if ($request->hasFile('photo')) {
-            // remove old if exists
             if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
                 Storage::disk('public')->delete($officer->photo);
             }
@@ -88,19 +96,25 @@ class OfficerController extends Controller
 
         $officer->update($data);
 
-        return redirect()->route('officers.list')->with('success', 'Officer updated successfully.');
+        return redirect()->route('officers.list')->with('success', 'Member updated successfully.');
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+        $id = base64_decode($request->id);
+        Officers::where('id', $id)->update(['is_active' => $request->is_active]);
+        return redirect()->route('officers.list')->with('success', 'Member status updated successfully.');
     }
 
     public function delete(Request $request)
     {
         $id = base64_decode($request->encodedId);
         $officer = Officers::findOrFail($id);
-        // delete file from storage if present
         if ($officer->photo && Storage::disk('public')->exists($officer->photo)) {
             Storage::disk('public')->delete($officer->photo);
         }
-
-        $officer = Officers::where ('id', $id)->update(['is_deleted' => 1]);
-        return redirect()->route('officers.list')->with('success', 'Officer deleted successfully.');
+        Officers::where('id', $id)->update(['is_deleted' => 1]);
+        return redirect()->route('officers.list')->with('success', 'Member deleted successfully.');
     }
 }

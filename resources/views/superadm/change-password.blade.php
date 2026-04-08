@@ -1,5 +1,7 @@
 @extends('superadm.layout.master')
 
+@section('title', 'Change Password')
+
 @section('content')
     <div class="row">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -54,7 +56,8 @@
                 </div>
             </div>
         </div>
-        <script>
+    </div>
+    <script>
             function togglePassword(fieldId) {
                 var field = document.getElementById(fieldId);
                 var icon = field.nextElementSibling; // get the eye icon

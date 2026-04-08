@@ -125,9 +125,9 @@ class WelcomeNoteController extends Controller
 	public function updateStatus(Request $req)
 	{
 		try {
-			 $id = base64_decode($req->id);
-            $data = ['is_active' => $req->is_active];
-			WelcomeNote::where('id', $id)->update($data);
+			$req->validate(['id' => 'required', 'is_active' => 'required|in:0,1']);
+			$id = base64_decode($req->id);
+			WelcomeNote::where('id', $id)->update(['is_active' => $req->is_active]);
 			return redirect()->route('welcome-note.list')->with('success', 'Welcome note status updated successfully.');
 		} catch (Exception $e) {
 			return redirect()->back()->with('error', 'Failed to update status: ' . $e->getMessage());

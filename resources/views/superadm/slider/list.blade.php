@@ -20,6 +20,7 @@
                                     <th>Sr. No.</th>
                                     <th>Name</th>
                                     <th>Photo</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -30,10 +31,24 @@
                                         <td>{{ $data->name }}</td>
                                         <td>
                                             @if ($data->photo)
-                                                <img style="height: 150px;width: 150px;"
-                                                    src="{{ asset('storage/' . $data->photo) }}" alt="{{ $data->name }}"
-                                                    class="table-img">
+                                                <img src="{{ asset('storage/' . $data->photo) }}"
+                                                    alt="{{ $data->name }}"
+                                                    class="img-thumb"
+                                                    onclick="openImgModal('{{ asset('storage/' . $data->photo) }}')"
+                                                    title="Click to preview">
                                             @endif
+                                        </td>
+                                        <td>
+                                            <form action="{{ route('slider.updatestatus') }}" method="POST" class="d-inline-block">
+                                                @csrf
+                                                <label class="switch">
+                                                    <input type="checkbox" class="toggle-status"
+                                                        data-id="{{ base64_encode($data->id) }}"
+                                                        {{ $data->is_active == 1 ? 'checked' : '' }}>
+                                                    <span class="slider"></span>
+                                                </label>
+                                                <input type="hidden" name="id" value="{{ base64_encode($data->id) }}">
+                                            </form>
                                         </td>
                                         <td>
                                             <a href="{{ route('slider.edit', base64_encode($data->id)) }}"
@@ -56,6 +71,36 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).on("change", ".toggle-status", function (e) {
+            e.preventDefault();
+            let checkbox = $(this);
+            let form = checkbox.closest("form");
+            let is_active = checkbox.is(":checked") ? 1 : 0;
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Do you want to change the status?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!",
+                cancelButtonText: "No, cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (form.find("input[name='is_active']").length) {
+                        form.find("input[name='is_active']").val(is_active);
+                    } else {
+                        form.append(`<input type="hidden" name="is_active" value="${is_active}">`);
+                    }
+                    form.submit();
+                } else {
+                    checkbox.prop("checked", !checkbox.is(":checked"));
+                }
+            });
+        });
+    </script>
 @endsection
 
 @push('scripts')

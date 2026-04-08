@@ -9,6 +9,6 @@ class Gallary extends Model
     public $table = 'gallaries';
     public $timestamps = true;
 
-   protected $fillable = ['name','attachment','type_attachment'];
+   protected $fillable = ['name','attachment','type_attachment', 'is_active', 'is_deleted'];
 
 }

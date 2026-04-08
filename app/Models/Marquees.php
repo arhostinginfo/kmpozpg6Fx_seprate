@@ -9,5 +9,5 @@ class Marquees extends Model
     public $table = 'marquees';
     public $timestamps = true;
 
-    protected $fillable = ['message'];
+    protected $fillable = ['message', 'is_active', 'is_deleted'];
 }
